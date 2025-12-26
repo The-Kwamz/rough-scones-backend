@@ -1,14 +1,20 @@
-import mysql from "mysql2/promise";
 import fs from "fs";
-import { config } from "./config.js";
+import path from "path";
+import mysql from "mysql2/promise";
+import dotenv from "dotenv";
+dotenv.config();
 
-export const db = await mysql.createPool({
-  host: config.DB_HOST,
-  user: config.DB_USER,
-  password: config.DB_PASSWORD,
-  database: config.DB_NAME,
-  port: config.DB_PORT,
-  ssl: {
-    ca: fs.readFileSync("./server-ca.pem"),
-  },
+const sslConfig = process.env.DB_SSL_CA
+  ? { ca: fs.readFileSync(path.resolve(process.env.DB_SSL_CA)) }
+  : undefined;
+
+const db = await mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  ssl: sslConfig
 });
+
+console.log("DB Connected!");
+export default db;
