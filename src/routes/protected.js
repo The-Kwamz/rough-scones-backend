@@ -1,13 +1,15 @@
 import { Router } from "express";
-import { authenticate } from "../middlewares/authMiddleware.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { authorizeRoles } from "../middlewares/roleMiddleware.js";
 
 const router = Router();
 
-router.get("/dashboard", authenticate, (req, res) => {
-  res.json({
-    message: `Welcome ${req.user.email}, you are authenticated!`,
-    user: req.user
-  });
-});
+router.get("/dashboard", authMiddleware, (req, res) =>
+  res.json({ message: `Welcome ${req.user.email}`, user: req.user })
+);
+
+router.get("/admin-stats", authMiddleware, authorizeRoles("admin"), (req, res) =>
+  res.json({ message: "Admin stats accessed!", admin: req.user.email })
+);
 
 export default router;

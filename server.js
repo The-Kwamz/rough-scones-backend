@@ -1,3 +1,14 @@
+// server.js
+
+// CATCH EVERYTHING
+process.on("unhandledRejection", (reason) => {
+  console.error("UNHANDLED REJECTION:", reason);
+});
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+  process.exit(1); // optional
+});
+
 import dotenv from "dotenv";
 dotenv.config();
 console.log("JWT SECRET LOADED:", process.env.JWT_SECRET);
@@ -21,6 +32,6 @@ app.listen(PORT, async () => {
     await query("SELECT 1");
     console.log("MySQL connected successfully!");
   } catch (err) {
-    console.error("DB error:", err);
+    console.error("DB ERROR:", err);
   }
 });
